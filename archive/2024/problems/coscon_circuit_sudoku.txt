@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" class="sl-theme-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZKP Challenge</title>
+    
+    <!-- Shoelace Components -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/dark.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/shoelace-autoloader.js"></script>    
+    
+    <!-- Google Fonts - Lato -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sl-color-primary-600: #4a90e2;
+        }
+        
+        body {
+            margin: 0;
+            padding: 2rem;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Lato', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        sl-textarea::part(textarea) {
+            font-family: monospace;
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            background-color: #2a2a2a;
+            display: none;
+        }
+
+        pre {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Circuit 2: Impossible Sudoku</h1>
+        
+        <!-- <pre>Preset values:
+Row 0: [_, _, 3, _, _, 6, _, _, _]
+Row 1: [_, 5, _, 1, _, _, _, _, _]
+Row 2: [6, _, _, _, 2, 3, 4, _, _]
+Row 3: [_, 7, _, _, _, _, _, 5, _]
+Row 4: [_, _, _, 9, _, _, _, _, 7]
+Row 5: [_, 6, 4, _, 3, _, 8, _, _]
+Row 6: [_, 4, _, _, _, _, _, 9, 1]
+Row 7: [_, _, 2, _, _, 8, 3, _, _]
+Row 8: [_, _, _, _, _, _, _, _, _]</pre> -->
+        
+        <div class="input-group">
+            <sl-textarea 
+                id="board-input"
+                label="Enter the Sudoku board as a 9x9 JSON array of strings"
+                rows="11"
+                placeholder='[
+    ["_", "_", "3", "_", "_", "6", "_", "_", "_"],
+    ["_", "5", "_", "1", "_", "_", "_", "_", "_"],
+    ["6", "_", "_", "_", "2", "3", "4", "_", "_"],
+    ["_", "7", "_", "_", "_", "_", "_", "5", "_"],
+    ["_", "_", "_", "9", "_", "_", "_", "_", "7"],
+    ["_", "6", "4", "_", "3", "_", "8", "_", "_"],
+    ["_", "4", "_", "_", "_", "_", "_", "9", "1"],
+    ["_", "_", "2", "_", "_", "8", "3", "_", "_"],
+    ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
+]'
+            ></sl-textarea>
+        </div>
+        
+        <sl-button id="submit-btn" variant="primary" size="large" style="width: 100%;">
+            Submit
+        </sl-button>
+
+        <p>Once you get the flag, submit <a href="https://forms.gle/FV6JUqvNiC9CXtKK7" target="_blank">this form</a></p>
+        
+        <div id="result" class="result">
+            <sl-alert variant="primary" open>
+                <span id="result-text"></span>
+            </sl-alert>
+        </div>
+    </div>
+
+    <script>
+        const submitBtn = document.getElementById('submit-btn');
+        const boardInput = document.getElementById('board-input');
+        const result = document.getElementById('result');
+        const resultText = document.getElementById('result-text');
+
+        submitBtn.addEventListener('click', async () => {
+            try {
+                // Parse and validate the input
+                let board;
+                try {
+                    board = JSON.parse(boardInput.value);
+                } catch (e) {
+                    throw new Error('Invalid JSON format');
+                }
+
+                // Validate array dimensions
+                if (!Array.isArray(board) || board.length !== 9 || 
+                    !board.every(row => Array.isArray(row) && row.length === 9)) {
+                    throw new Error('Input must be a 9x9 array');
+                }
+
+                submitBtn.setAttribute('loading', '');
+                
+                const response = await fetch('http://ec2-3-101-146-156.us-west-1.compute.amazonaws.com/coscon_circuit_sudoku', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        board: board
+                    })
+                });
+
+                const data = await response.json();
+                result.style.display = 'block';
+                
+                if (data[0] === true) {
+                    result.querySelector('sl-alert').variant = 'success';
+                    resultText.textContent = data[1];
+                } else {
+                    result.querySelector('sl-alert').variant = 'danger';
+                    resultText.textContent = data[1];
+                }
+            } catch (error) {
+                result.style.display = 'block';
+                result.querySelector('sl-alert').variant = 'danger';
+                resultText.textContent = error.message || 'An error occurred while submitting the request.';
+            } finally {
+                submitBtn.removeAttribute('loading');
+            }
+        });
+    </script>
+</body>
+</html>

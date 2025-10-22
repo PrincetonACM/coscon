@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>COSCON 2024</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flipdown@0.3.2/dist/flipdown.min.css">
+    <style>
+        body {
+            margin: 0 5% 1rem 5%;
+            padding: 0 5% 1rem 5%;
+        }
+        .countdown-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0 2rem 0;
+        }
+    </style>
+  </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="./">COSCON 2024</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./problems.html">Problems</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./rules.html">Rules</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./leaderboard.html" target="_blank">Leaderboard</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+  
+      <br>
+
+    <center>
+        <img src="./Header.png" width="100%">
+    </center>
+        <br>
+
+    <h3>Welcome to the competition homepage for COSCON 2024!</h3>
+    <h4 style="display: flex; justify-content: center; margin-top: 1rem;"><a href="https://forms.gle/ejV5WbGKyRU8p4y57" target="_blank">Register here</a>&nbsp;by November 15, 2024</h4>
+
+    <div class="countdown-container">
+        <div id="flipdown" class="flipdown"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/flipdown@0.3.2/dist/flipdown.min.js"></script>
+    <script>
+        const countdownDate = new Date("2024-11-17T10:00:00-0400").getTime() / 1000;
+        const flipdown = new FlipDown(countdownDate, {
+            theme: 'dark'
+        }).start();
+    </script>
+
+
+	<!-- <br>
+	<div class="alert alert-primary" role="alert">
+	<p class="lead">COSCON has ended. Many thanks to everyone for participating. We are in process of tabulating the scores and the results will be released soon!</p>
+	</div> -->
+
+    <p>Details about our competition, including schedules and problems, may be viewed below.</p>
+    <p>Join the Discord <a href="https://discord.gg/ZdNAANp4xa" target="blank">here</a>!</p>
+
+    <div class="row align-items-start">
+        <div class="col">
+            <p class="lead">Schedule for COSCON.</p>
+            COSCON will be held on Sunday, November 17th, 2024. The location of all COSCON events is the <strong><a href="https://www.google.com/maps/place/Friend+Center+for+Engineering+Education,+7799+William+St,+Princeton,+NJ+08540/@40.3501038,-74.6543024,17z/data=!4m6!3m5!1s0x89c3e6c2c6e8d9f9:0x997e4572848080d8!8m2!3d40.3503164!4d-74.652736!16s%2Fg%2F12hrg1gp3">Friend Center</a></strong>. All times below are in EST. 
+            <ul>
+                <li> <strong>9:30 AM</strong> arrival and check-in </li>
+                <li> <strong>10:00 AM</strong> opening ceremony </li>
+                <li> <strong>after above</strong> problems released </li>
+                <li> <strong>~12:30 PM</strong> free pizza! </li>
+                <li> <strong>4:00 PM</strong> contest ends </li>
+                <li> <strong>4:30 PM</strong> closing ceremony </li>
+            </ul>
+            The problems will be released at the end of the opening ceremony (around 10:30 to 11:00). Answers are submitted online, so you may do the problems from anywhere, but feel free to stick around the Friend Center all day long, chatting with other participants and organizers!
+        </div>
+        <div class="col">
+            <p class="lead">Problems.</p>
+            
+            The problems will be released at <strong>11:00 AM</strong>. You will have <strong>5</strong> hours to work on this problem.
+            <br>
+            <strong>In terms of contest rules,</strong> please check out the <a href="./rules.html">list of contest rules</a> in detail here. The high level summary is that 
+            with the only restriction being that you cannot consult anyone outside of your team live (either in person
+            or online). Besides this restriction, feel free to use any online/offline resources to your benefit.
+            <br><br>
+            The competition problems will be released here:
+            <center> <a href="./problems.html" class="btn btn-large btn-info" style="margin-top: 0.5rem;">Go to Problems</a> </center>
+        </div>
+
+        <div class="col">
+            <p class="lead">About COSCON.</p>
+
+            COSCON is an annual computer science competition held at Princeton University by the <a href="https://princeton.acm.org">Princeton 
+            ACM student chapter</a>. The organizers and problem writers this year are:
+            <ul>
+                <li>Adham Ibrahim ('27)</li>
+                <li>Alexa Wingate ('27)</li>
+                <li>August Ning (G)</li>
+                <li>Daniel Yang ('26)</li>
+                <li>Devan Shah ('26)</li>
+                <li>Freddy Qiu (G)</li>
+                <li>Ijay Narang ('25)</li>
+                <li>Jishnu Roychoudhury ('27)</li>
+                <li>Joshua Lin ('27)</li>
+                <li>Kia Ghods ('27)</li>
+                <li>Minjae Kwon ('27)</li>
+                <li>Raheem Idowu ('26)</li>
+            </ul>
+            Our faculty sponsor is <a href="https://www.cs.princeton.edu/~pparedes/">Pedro Paredes</a>.
+        </div>
+    </div>
+    <br>
+    <h3>COSCON Sponsors</h3>
+    Many thanks to the amazing COSCON sponsors (listed below) to make COSCON happen!
+    <br>
+    <br>
+    <center>
+        <img src="./Footer.png" width="100%">
+    </center>
+
+    </body>
+</html>
