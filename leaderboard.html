@@ -78,7 +78,7 @@
                 // Parse CSV data into rows and columns
                 let rows = data.split("\n").map(row => row.split(","));
                 rows = rows.slice(1).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-                rows.unshift(['Rank', 'Team_ID', '1', '2', '3', '4.1', '4.2', '4.3', '5.1a', '5.1b', '5.2a', '5.2b', '6', '7', '8.1', '8.2', '8.3', '9', '10', '10.1', '11', '11.1', '11.2', 'A.1', 'A.2', 'A.3', 'B.1', 'B.2', 'B.3', 'Total']);  // Add back header row
+                rows.unshift(['Rank', 'Team_ID', '1', '2', '3.1', '3.2', '4a', '4b', '4c', '5.1a', '5.1b', '5.2a', '5.2b', '5.2c', '5.2d', '5.2e', '6.1', '6.2', '7.1', '7.2', '7.3', '8.1', '8.2', '9', '10.1', '10.2', 'A', 'B.1', 'B.2', 'B.3', 'Total']);  // Add back header row
 
                 // Clear existing table content
                 const thead = document.querySelector("#data-table thead");
