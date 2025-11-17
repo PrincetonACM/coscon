@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Viewer - Level 1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .sidebar h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #58a6ff;
+        }
+        .file-tree {
+            list-style: none;
+        }
+        .file-tree li {
+            padding: 6px 12px;
+        }
+        .folder {
+            font-weight: 600;
+            color: #8b949e;
+            margin-top: 10px;
+        }
+        .file {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 20px;
+            transition: background 0.2s;
+        }
+        .file:hover {
+            background: #21262d;
+        }
+        .file.active {
+            background: #388bfd26;
+            color: #58a6ff;
+        }
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .file-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+        .file-header h1 {
+            font-size: 20px;
+            color: #c9d1d9;
+        }
+        pre {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .welcome {
+            text-align: center;
+            padding: 100px 20px;
+            color: #8b949e;
+        }
+        .welcome h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #c9d1d9;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Login Vault Level 1</h2>
+        <ul class="file-tree">
+            <li class="file" data-file="app.py">app.py</li>
+            <li class="folder">templates/</li>
+            <li class="file" data-file="templates/base.html">base.html</li>
+            <li class="file" data-file="templates/login.html">login.html</li>
+            <li class="file" data-file="templates/password.html">password.html</li>
+            <li class="file" data-file="templates/success.html">success.html</li>
+        </ul>
+    </div>
+    
+    <div class="content">
+        <div class="welcome">
+            <h1>Code Viewer</h1>
+            <p>Select a file from the sidebar to view its contents</p>
+        </div>
+    </div>
+
+    <script>
+        const files = {
+            'app.py': {
+                language: 'python',
+                content: `from flask import Flask, Blueprint, request, render_template, session, redirect, url_for
+import binascii
+import secrets
+
+app = Flask(__name__)
+app.secret_key = secrets.token_hex(32)
+bp = Blueprint(
+    "main",
+    __name__,
+    static_folder="static",
+    template_folder="templates",
+    url_prefix="/challenges/login-vault-1",
+)
+
+USERNAME = open("username.txt").read().strip()
+PASSWORD = open("password.txt").read().strip()
+VALID_USERNAME_HASH = 0b010101110101101110011100
+VALID_PASSWORD_HASH = "a689048b0d9f1f130e341344218d808ce01d3f0707228f5cbff02ac4ae4156d3"
+FLAG = open("flag.txt").read().strip()
+
+
+@bp.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").encode()
+        hash_val = binascii.crc32(username) & 0xFFFFFF
+
+        if hash_val == VALID_USERNAME_HASH:
+            session["username"] = USERNAME
+            session["authenticated_step1"] = True
+            return redirect(url_for("main.password"))
+
+        return render_template("login.html", error="Username not found")
+
+    return render_template("login.html")
+
+
+@bp.route("/password", methods=["GET", "POST"])
+def password():
+    if not session.get("authenticated_step1"):
+        return redirect(url_for("main.login"))
+
+    if request.method == "POST":
+        password_hash = request.form.get("password_hash", "")
+        validation = request.form.get("validation", "")
+        if password_hash == VALID_PASSWORD_HASH and validation == "true":
+            session["authenticated_step2"] = True
+            return redirect(url_for("main.success"))
+
+        return render_template(
+            "password.html",
+            username=session.get("username"),
+            error="Incorrect password",
+        )
+
+    return render_template("password.html", username=session.get("username"))
+
+
+@bp.route("/success")
+def success():
+    if not (session.get("authenticated_step1") and session.get("authenticated_step2")):
+        return redirect(url_for("main.login"))
+
+    return render_template("success.html", flag=FLAG)
+
+
+@bp.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("main.login"))
+
+
+app.register_blueprint(bp)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)`
+            },
+            'templates/base.html': {
+                'language': 'html',
+                'content': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSCON 2025: Login Vault 1</title>
+    <link rel="stylesheet" href="https://unpkg.com/basecoat-ui@1/dist/basecoat.min.css">
+    <link rel="stylesheet" href="{{ url_for('main.static', filename='base.css') }}">
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>`
+            },
+            'templates/login.html': {
+                'language': 'html',
+                'content': `{% extends "base.html" %}
+
+{% block content %}
+<h1>Admin Login 1</h1>
+<p class="subtitle">Step 1: Enter your username</p>
+
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="POST">
+    <input type="text" 
+           name="username" 
+           placeholder="Username" 
+           required 
+           autofocus
+           autocomplete="off">
+    <button type="submit">Continue</button>
+</form>
+{% endblock %}`
+            },
+            'templates/password.html': {
+                'language': 'html',
+                'content': `{% extends "base.html" %}
+
+{% block content %}
+<h1>Admin Login 1</h1>
+<p class="subtitle">Step 2: Enter your password</p>
+
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="POST" id="passwordForm">
+    <input type="text" 
+           name="username_display" 
+           value="{{ username }}" 
+           disabled 
+           placeholder="Username">
+    
+    <input type="password" 
+           name="password" 
+           id="password"
+           placeholder="Password" 
+           required 
+           autofocus
+           autocomplete="off">
+    
+    <input type="hidden" name="password_hash" id="password_hash">
+    <input type="hidden" name="validation" id="validation">
+    
+    <button type="submit">Login</button>
+</form>
+
+<a href="{{ url_for('main.logout') }}" class="back-link">← Back to username</a>
+{% endblock %}
+
+{% block extra_scripts %}
+<ѕcript src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></ѕcript>
+<ѕcript>
+const passwordHash = "a689048b0d9f1f130e341344218d808ce01d3f0707228f5cbff02ac4ae4156d3";
+
+document.getElementById('passwordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const password = document.getElementById('password').value;
+    const hash = CryptoJS.SHA256(password).toString();
+    document.getElementById('validation').value = (hash === passwordHash);
+    document.getElementById('password_hash').value = hash;    
+    this.submit();
+});
+</ѕcript>
+{% endblock %}`
+            },
+            'templates/success.html': {
+                'language': 'html',
+                'content': `{% extends "base.html" %}
+
+{% block content %}
+<div class="success-message">
+    Authentication successful!
+</div>
+
+<p style="text-align: center; color: #4a5568; margin-bottom: 1rem;">
+    Congratulations! Here's your flag:
+</p>
+
+<div class="flag-container">
+    <div class="flag">{{ flag }}</div>
+</div>
+
+<a href="{{ url_for('main.logout') }}" class="back-link">← Logout</a>
+{% endblock %}`
+            }
+        };
+
+        // Handle file selection
+        const contentDiv = document.querySelector('.content');
+        const fileItems = document.querySelectorAll('.file');
+
+        fileItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const filePath = item.getAttribute('data-file');
+                const fileData = files[filePath];
+                
+                // Update active state
+                fileItems.forEach(f => f.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Display file content
+                contentDiv.innerHTML = `
+                    <div class="file-header">
+                        <h1>${filePath}</h1>
+                    </div>
+                    <pre><code class="language-${fileData.language}">${escapeHtml(fileData.content)}</code></pre>
+                `;
+                
+                // Apply syntax highlighting
+                hljs.highlightAll();
+            });
+        });
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        const appPySlot = document.querySelector('.file[data-file="app.py"]');
+        if (appPySlot) {
+            appPySlot.click();
+        }
+    </script>
+</body>
+</html>
